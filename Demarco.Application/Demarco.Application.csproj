@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Demarco.DTOs\Demarco.DTOs.csproj" />
+    <ProjectReference Include="..\Demarco.Repository.Interface\Demarco.Repository.Interface.csproj" />
+  </ItemGroup>
+
+</Project>

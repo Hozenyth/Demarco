@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Demarco.Application\Demarco.Application.csproj" />
+    <ProjectReference Include="..\Demarco.Domain\Demarco.Domain.csproj" />
+    <ProjectReference Include="..\Demarco.DTOs\Demarco.DTOs.csproj" />
+    <ProjectReference Include="..\Demarco.Repository.Interface\Demarco.Repository.Interface.csproj" />
+    <ProjectReference Include="..\Demarco.Repository\Demarco.Repository.csproj" />
+  </ItemGroup>
+
+
+</Project>

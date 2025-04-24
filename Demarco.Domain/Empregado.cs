@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Demarco.Domain
 {
@@ -20,5 +18,11 @@ namespace Demarco.Domain
 
         public Empregado() { }
 
+        public void AtualizarEmpregado(string cpf, string nome, DateTime dataNascimento)
+        {
+            CPF = cpf;
+            Nome = nome;
+            DataNascimento = dataNascimento;
+        }
     }
 }

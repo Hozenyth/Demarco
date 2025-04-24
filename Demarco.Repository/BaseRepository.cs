@@ -77,5 +77,15 @@ namespace Demarco.Repository
                 return await query.ToArrayAsync(); ;
             }
         }
+
+        public async Task<bool> GetCpfAsync(string cpf)
+        {
+            IQueryable<T> query = dbSet;
+           
+            query = query.Where(e => EF.Property<string>(e, "CPF") == cpf);
+           
+            return await query.AnyAsync();
+        }
+
     }
 }

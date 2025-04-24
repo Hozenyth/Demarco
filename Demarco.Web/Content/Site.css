@@ -18,6 +18,39 @@ textarea {
     max-width: 280px;
 }
 
+.grid-row td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.modal-body .form-control {
+    margin-bottom: 15px; 
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    transition: border-color 0.3s;
+}
+
+.modal-body .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+}
+
+.modal-title {    
+    font-size: 22px;
+    font-weight: bold;
+    color: black; 
+   
+}
+
+.btn-margin-bottom {
+    margin-bottom: 20px; 
+}
+
+.mensagens{
+    margin-top: 10px;
+}
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {

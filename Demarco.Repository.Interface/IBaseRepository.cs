@@ -14,6 +14,7 @@ namespace Demarco.Repository.Interface
         void Delete(T entity);
         Task<bool> SaveChangesAsync();
         Task<T> GetAsync(int id);
+        Task<bool> GetCpfAsync(string cpf);
         Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
         string includeProperties = "");

@@ -45,7 +45,15 @@ namespace Demarco.Web
                 if (response.IsSuccessStatusCode)
                 {
                     string mensagem = response.Content.ReadAsStringAsync().Result;
-                    ltMensagemSucesso.Text = $"<div class='alert alert-success' role='alert'>{mensagem}</div>";
+                   
+                    Session["mensagemSucessoLogin"] = $"<div class='alert alert-success' role='alert'>{mensagem}</div>";
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "MensagemERedirecionamento", @"
+                     setTimeout(function() {
+                     var msg = document.querySelector('.alert-success');
+                     if (msg) msg.style.display = 'none';
+                     window.location.href = 'Empregado.aspx';
+                     });", true);
 
                 }
                 else

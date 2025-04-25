@@ -12,6 +12,11 @@ using Microsoft.OpenApi.Models;
 using System.IO;
 using System.Reflection;
 using System;
+using Demarco.Domain.Services;
+using Demarco.Repository.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Demarco.API
 {
@@ -38,6 +43,7 @@ namespace Demarco.API
             services.AddTransient<IEmpregadoApp, EmpregadoApp>();
             services.AddTransient<IUsuarioRepository, UsuarioRepository>();
             services.AddTransient<IUsuarioApp, UsuarioApp>();
+            services.AddTransient<IAuthService, AuthService>();           
 
             services.AddCors();
 
@@ -49,6 +55,24 @@ namespace Demarco.API
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services
+              .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(options =>
+              {
+                  options.TokenValidationParameters = new TokenValidationParameters
+                  {
+                      ValidateIssuer = true,
+                      ValidateAudience = true,
+                      ValidateLifetime = true,
+                      ValidateIssuerSigningKey = true,
+
+                      ValidIssuer = Configuration["Jwt:Issuer"],
+                      ValidAudience = Configuration["Jwt:Audience"],
+                      IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                  };
+              });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,6 +95,7 @@ namespace Demarco.API
                        
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

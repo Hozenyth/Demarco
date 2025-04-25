@@ -15,6 +15,7 @@ namespace Demarco.Repository.Interface
         Task<bool> SaveChangesAsync();
         Task<T> GetAsync(int id);
         Task<bool> GetCpfAsync(string cpf);
+        Task<T> GetUserByEmailAndPasswordAsync(string email, string passwordHash);
         Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
         string includeProperties = "");

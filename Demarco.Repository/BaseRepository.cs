@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Demarco.Repository
 {
@@ -85,6 +86,14 @@ namespace Demarco.Repository
             query = query.Where(e => EF.Property<string>(e, "CPF") == cpf);
            
             return await query.AnyAsync();
+        }
+
+        public async Task<T> GetUserByEmailAndPasswordAsync(string email, string passwordHash)
+        {
+            IQueryable<T> query = dbSet;
+            return await query
+                .Where(e => EF.Property<string>(e, "Email") == email && EF.Property<string>(e, "Password") == passwordHash)
+                .SingleOrDefaultAsync();
         }
 
     }

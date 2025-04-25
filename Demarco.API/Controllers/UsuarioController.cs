@@ -1,5 +1,6 @@
 ﻿using Demarco.Application.Interfaces;
 using Demarco.Application.Validators;
+using Demarco.Domain;
 using Demarco.DTOs;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
@@ -52,16 +53,20 @@ namespace Demarco.API.Controllers
 
             }
         }
-        //[HttpPost("login")]
-        //public IActionResult Login([FromBody] LoginDTO login)
-        //{
-        //    if (login.Usuario == "admin" && login.Senha == "123")
-        //    {
-        //        var token = GerarToken(); // método abaixo
-        //        return Ok(new { token });
-        //    }
 
-        //    return Unauthorized("Usuário ou senha inválidos");
-        //}
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDTO login)
+        {
+            var sucesso = await _app.Login(login);
+
+            if (sucesso != null)
+            {
+
+                return StatusCode(StatusCodes.Status201Created, sucesso.Token);
+               
+            }           
+
+            return StatusCode(StatusCodes.Status401Unauthorized, "Usuário não autorizado");
+        }
     }
 }

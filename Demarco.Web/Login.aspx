@@ -5,7 +5,7 @@
         <h2>Login</h2>
         <asp:Label ID="lblMensagem" runat="server" CssClass="text-danger"></asp:Label>
         <div class="form-group">
-            <label for="txtUsuario">Usuário:</label>
+            <label for="txtUsuario">Email:</label>
             <asp:TextBox ID="txtUsuario" runat="server" CssClass="form-control" />
         </div>
         <div class="form-group">
@@ -21,4 +21,9 @@
         </asp:LinkButton>
 
     </div>
+
+     <div class="mensagens">
+      <asp:Literal ID="ltMensagemSucesso" runat="server" EnableViewState="false" />
+      <asp:Literal ID="ltMensagemError" runat="server" />
+ </div>
 </asp:Content>

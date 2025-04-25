@@ -1,6 +1,7 @@
 ﻿using Demarco.Application.Interfaces;
 using Demarco.Application.Validators;
 using Demarco.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -21,6 +22,7 @@ namespace Demarco.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(typeof(EmpregadoDTO[]), (int)HttpStatusCode.OK)]
         public IActionResult Get()
         {
@@ -36,6 +38,7 @@ namespace Demarco.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(typeof(EmpregadoDTO), (int)HttpStatusCode.Created)]       
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> Post(EmpregadoDTO empregado)
@@ -75,6 +78,7 @@ namespace Demarco.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         [ProducesResponseType(typeof(EmpregadoDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
@@ -97,6 +101,7 @@ namespace Demarco.API.Controllers
 
 
         [HttpPut]
+        [Authorize]
         [ProducesResponseType(typeof(EmpregadoDTO), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Put(EmpregadoDTO empregado)
         {

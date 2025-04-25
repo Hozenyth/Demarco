@@ -16,6 +16,18 @@ namespace Demarco.Web
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
+            {
+                if (Session["mensagemSucessoLogin"] != null)
+                {
+                    ltMensagemSucesso.Text = $"<div class='alert alert-success' role='alert'>{Session["mensagemSucessoLogin"]}</div>";
+                                       
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "OcultarMensagem", @"
+                    setTimeout(function() {
+                    var msg = document.querySelector('.alert-success');
+                    if (msg) msg.style.display = 'none';
+                    },  5000);", true);
+                }
+            }
                 Carregar();
         }
 
@@ -24,12 +36,23 @@ namespace Demarco.Web
 
             string APIurl = ConfigurationManager.AppSettings["apiUrl"];
             List<EmpregadoDTO> lst = new List<EmpregadoDTO>();
+           
+            var token = Session["token"]?.ToString();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                ltMensagemError.Text = "<div class='alert alert-warning'>Você precisa estar logado para visualizar os empregados. Faça login ou cadastre-se.</div>";
+                return;
+            }
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(APIurl);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
+
+                client.DefaultRequestHeaders.Authorization =
+               new AuthenticationHeaderValue("Bearer", token.Trim('"'));
 
                 HttpResponseMessage response = client.GetAsync("Empregado").Result;
                 if (response.IsSuccessStatusCode)
@@ -45,6 +68,13 @@ namespace Demarco.Web
         protected void btnCadastrar_Click(object sender, EventArgs e)
         {
             string APIurl = ConfigurationManager.AppSettings["apiUrl"];
+
+            var token = Session["token"]?.ToString();
+            if (string.IsNullOrEmpty(token))
+            {
+                ltMensagemError.Text = "<div class='alert alert-warning'>Você precisa estar logado para cadastrar um empregado. Faça login ou cadastre-se.</div>";
+                return;
+            }
 
             if (!DateTime.TryParse(txtDataNascimento.Text, out DateTime dataNascimento))
             {
@@ -64,8 +94,12 @@ namespace Demarco.Web
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
-              
+
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token.Trim('"'));
+
                 string json = JsonConvert.SerializeObject(empregado);
+                            
                 HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
               
                 HttpResponseMessage response = client.PostAsync("Empregado", content).Result;
@@ -73,7 +107,10 @@ namespace Demarco.Web
                 if (response.IsSuccessStatusCode)
                 {
                     string mensagem = response.Content.ReadAsStringAsync().Result;
-                    ltMensagemSucesso.Text = $"<div class='alert alert-success' role='alert'>{mensagem}</div>";
+                    ltMensagemSucesso.Text = $"<div class='alert alert-success' role='alert' id='sucesso'>{mensagem}</div>";
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "RemoverMensagemSucesso",
+                    "setTimeout(function() { document.getElementById('sucesso').style.display = 'none'; }, 5000);", true);
 
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "FecharModal", "$('#modalEditarEmpregado').modal('hide');", true);
                 }
@@ -81,7 +118,11 @@ namespace Demarco.Web
                 {                   
                     string result = response.Content.ReadAsStringAsync().Result;
                     result = result.Replace(". ", ".<br/>");
-                    ltMensagemError.Text = $"<div class='alert alert-danger'>{result}</div>";                    
+                    ltMensagemError.Text = $"<div class='alert alert-danger' id='erro'>{result}</div>";
+                    ltMensagemError.Text = $"<div class='alert alert-danger' id='erro'>{response}</div>";
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "RemoverMensagemErro",
+                    $"setTimeout(function() {{ document.getElementById('erro').style.display = 'none'; }}, 5000);", true);
                 }
 
                 Carregar(); 
@@ -93,6 +134,12 @@ namespace Demarco.Web
         {
             if (e.CommandName == "Editar")
             {
+                var token = Session["token"]?.ToString();
+                if (string.IsNullOrEmpty(token))
+                {
+                    ltMensagemError.Text = "<div class='alert alert-warning'>Você precisa estar logado para editar um empregado. Faça login ou cadastre-se.</div>";
+                    return;
+                }
                 int id = Convert.ToInt32(e.CommandArgument);
                 CarregarEmpregadoPorId(id);
             }
@@ -103,11 +150,15 @@ namespace Demarco.Web
             string APIurl = ConfigurationManager.AppSettings["apiUrl"];
             EmpregadoDTO empregado = null;
 
+            var token = Session["token"]?.ToString();
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(APIurl);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token.Trim('"'));
 
                 HttpResponseMessage response = client.GetAsync("Empregado/" + id).Result;
                 if (response.IsSuccessStatusCode)
@@ -131,7 +182,14 @@ namespace Demarco.Web
         protected void btnSalvarEdicao_Click(object sender, EventArgs e)
         {
             string APIurl = ConfigurationManager.AppSettings["apiUrl"];
-           
+
+            var token = Session["token"]?.ToString();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                ltMensagemError.Text = "<div class='alert alert-warning'>Você precisa estar logado para editar um empregado. Faça login ou cadastre-se.</div>";
+                return;
+            }
             if (!DateTime.TryParse(TextBox3.Text, out DateTime dataNascimento))
             {
                 ltMensagemError.Text = "<div class='alert alert-danger'>Data de nascimento inválida.</div>";
@@ -147,11 +205,16 @@ namespace Demarco.Web
           
             using (HttpClient client = new HttpClient())
             {
-                client.BaseAddress = new Uri(APIurl);
+                client.BaseAddress = new Uri(APIurl);                             
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token.Trim('"'));
 
                 string json = JsonConvert.SerializeObject(editarEmpregado);
+
                 HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage response = client.PutAsync("Empregado", content).Result;
@@ -159,7 +222,10 @@ namespace Demarco.Web
                 if (response.IsSuccessStatusCode)
                 {
                     string mensagem = response.Content.ReadAsStringAsync().Result;
-                    ltMensagemSucesso.Text = $"<div class='alert alert-success' role='alert'>{mensagem}</div>";
+                    ltMensagemSucesso.Text = $"<div class='alert alert-success' role='alert' id='sucesso'>{mensagem}</div>";
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "RemoverMensagemSucesso",
+                    "setTimeout(function() { document.getElementById('sucesso').style.display = 'none'; }, 5000);", true);
 
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "FecharModal", "$('#modalEditarEmpregado').modal('hide');", true);
                 }
@@ -167,7 +233,11 @@ namespace Demarco.Web
                 {
                     string result = response.Content.ReadAsStringAsync().Result;
                     result = result.Replace(". ", ".<br/>");
-                    ltMensagemError.Text = $"<div class='alert alert-danger'>{result}</div>";
+                    ltMensagemError.Text = $"<div class='alert alert-danger' id='erro'>{result}</div>";
+                    ltMensagemError.Text = $"<div class='alert alert-danger' id='erro'>{response}</div>";
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "RemoverMensagemErro",
+                    $"setTimeout(function() {{ document.getElementById('erro').style.display = 'none'; }}, 5000);", true);
                 }
 
                 Carregar();
